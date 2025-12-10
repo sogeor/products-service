@@ -1,6 +1,6 @@
 on:
   release:
-    types: [ published ]
+    types: [published]
 jobs:
   deploy:
     uses: sogeor/workflows/.github/workflows/release.yml@master
