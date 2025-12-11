@@ -19,9 +19,9 @@
 | HTTP_MAX_HEADER_SIZE            | Максимально допустимый размер заголовка запроса.                           | 8KB                   |
 | HTTP_MANAGEMENT_BASE_PATH       | Базовый путь служебного API.                                               | /v1/products          |
 | CONFIG_SERVER_URL               | Ссылка на сервер конфигураций.                                             |                       |
-| DATASOURCE_URL                  | Ссылка на базу данных PostgreSQL.                                          |                       |
-| DATASOURCE_USERNAME             | Имя пользователя, необходимое для подключения к базе данных PostgreSQL.    |                       |
-| DATASOURCE_PASSWORD             | Пароль пользователя, необходимый для подключения к базе данных PostgreSQL. |                       |
+| R2DBC_URL                       | Ссылка на базу данных PostgreSQL.                                          |                       |
+| R2DBC_USERNAME                  | Имя пользователя, необходимое для подключения к базе данных PostgreSQL.    |                       |
+| R2DBC_PASSWORD                  | Пароль пользователя, необходимый для подключения к базе данных PostgreSQL. |                       |
 | MONGODB_HOST                    | Хост базы данных MongoDB.                                                  |                       |
 | MONGODB_PORT                    | Порт базы данных MongoDB.                                                  | 27017                 |
 | MONGODB_USERNAME                | Имя пользователя, необходимое для подключения к базе данных MongoDB.       |                       |
