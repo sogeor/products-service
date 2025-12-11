@@ -9,6 +9,7 @@ import com.sogeor.service.products.mapper.ProductMapper;
 import com.sogeor.service.products.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,25 +29,23 @@ public class ProductService {
 
     private final ProductEventProducer productEventProducer;
 
-    public Flux<ProductResponse> getAllProducts(Pageable pageable) {
-        return productRepository.findAll() // Note: Reactive Mongo doesn't support Pageable directly efficiently like
-                                // paging repo, but typically findAll(Sort) or just find all and skip/limit.
-                                // Ideal for Mongo Reactive:
-                                // .skip(pageable.getOffset()).take(pageable.getPageSize())
-                                .skip(pageable.getOffset()).take(pageable.getPageSize()).map(productMapper::toResponse);
+    public Flux<@NotNull ProductResponse> getAllProducts(Pageable pageable) {
+        return productRepository.findAll()
+                                .skip(pageable.getOffset())
+                                .take(pageable.getPageSize())
+                                .map(productMapper::toResponse);
     }
 
-    public Mono<ProductResponse> getProductById(String id) {
+    public Mono<@NotNull ProductResponse> getProductById(String id) {
         return productRepository.findById(id).map(productMapper::toResponse);
     }
 
-    public Flux<ProductResponse> searchProducts(String query) {
-        // Simple search by name or category
+    public Flux<@NotNull ProductResponse> searchProducts(String query) {
         return productRepository.findByNameContainingIgnoreCase(query).map(productMapper::toResponse);
     }
 
     @Transactional
-    public Mono<ProductResponse> createProduct(ProductRequest request) {
+    public Mono<@NotNull ProductResponse> createProduct(ProductRequest request) {
         Product product = productMapper.toEntity(request);
         return productRepository.save(product).flatMap(savedProduct -> {
             ProductEvent event = ProductEvent.builder()
@@ -62,7 +61,7 @@ public class ProductService {
     }
 
     @Transactional
-    public Mono<ProductResponse> updateProduct(String id, ProductRequest request) {
+    public Mono<@NotNull ProductResponse> updateProduct(String id, ProductRequest request) {
         return productRepository.findById(id).flatMap(existingProduct -> {
             existingProduct.setName(request.getName());
             existingProduct.setDescription(request.getDescription());
@@ -83,7 +82,7 @@ public class ProductService {
     }
 
     @Transactional
-    public Mono<Void> deleteProduct(String id) {
+    public Mono<@NotNull Void> deleteProduct(String id) {
         return productRepository.findById(id)
                                 .flatMap(product -> productRepository.delete(product).then(Mono.defer(() -> {
                                     ProductEvent event = ProductEvent.builder()

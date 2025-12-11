@@ -5,6 +5,7 @@ import com.sogeor.service.products.dto.ProductResponse;
 import com.sogeor.service.products.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,43 +30,43 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public Flux<ProductResponse> getAllProducts(@RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size) {
+    public Flux<@NotNull ProductResponse> getAllProducts(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size) {
         return productService.getAllProducts(PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<ProductResponse>> getProductById(@PathVariable String id) {
+    public Mono<@NotNull ResponseEntity<@NotNull ProductResponse>> getProductById(@PathVariable String id) {
         return productService.getProductById(id)
                              .map(ResponseEntity::ok)
                              .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/search")
-    public Flux<ProductResponse> searchProducts(@RequestParam String query) {
+    public Flux<@NotNull ProductResponse> searchProducts(@RequestParam String query) {
         return productService.searchProducts(query);
     }
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<ProductResponse> createProduct(@RequestBody @Valid ProductRequest request) {
+    public Mono<@NotNull ProductResponse> createProduct(@RequestBody @Valid ProductRequest request) {
         return productService.createProduct(request);
     }
 
     @PutMapping("/{id}/update")
-    public Mono<ResponseEntity<ProductResponse>> updateProduct(@PathVariable String id,
-                                                               @RequestBody @Valid ProductRequest request) {
+    public Mono<@NotNull ResponseEntity<@NotNull ProductResponse>> updateProduct(@PathVariable String id,
+                                                                                 @RequestBody @Valid ProductRequest request) {
         return productService.updateProduct(id, request)
                              .map(ResponseEntity::ok)
                              .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}/delete")
-    public Mono<ResponseEntity<Void>> deleteProduct(@PathVariable String id) {
+    public Mono<@NotNull ResponseEntity<@NotNull Void>> deleteProduct(@PathVariable String id) {
         return productService.getProductById(id)
                              .flatMap(p -> productService.deleteProduct(id)
-                                                         .then(Mono.just(
-                                                                 new ResponseEntity<Void>(HttpStatus.NO_CONTENT))))
+                                                         .then(Mono.just(new ResponseEntity<@NotNull Void>(
+                                                                 HttpStatus.NO_CONTENT))))
                              .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
