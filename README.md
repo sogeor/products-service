@@ -18,6 +18,7 @@
 | HTTP_BASE_PATH                  | Базовый путь основного API.                                                | /v1/products          |
 | HTTP_MAX_HEADER_SIZE            | Максимально допустимый размер заголовка запроса.                           | 8KB                   |
 | HTTP_MANAGEMENT_BASE_PATH       | Базовый путь служебного API.                                               | /v1/products          |
+| CONFIG_SERVER_URL               | Ссылка на сервер конфигураций.                                             |                       |
 | DATASOURCE_URL                  | Ссылка на базу данных PostgreSQL.                                          |                       |
 | DATASOURCE_USERNAME             | Имя пользователя, необходимое для подключения к базе данных PostgreSQL.    |                       |
 | DATASOURCE_PASSWORD             | Пароль пользователя, необходимый для подключения к базе данных PostgreSQL. |                       |
@@ -29,9 +30,3 @@
 | MONGODB_DATABASE                | Имя базы данных MongoDB.                                                   | products              |
 | KAFKA_BOOTSTRAP_SERVERS         | Список URL для подключения к Apache Kafka.                                 |                       |
 | KAFKA_CONSUMER_GROUP            | Имя группы потребителей в Apache Kafka.                                    | products-service      |
-
-## Работа с приложением
-
-### Чтение документации API
-
-Документация API должна быть доступна по адресу: https://api.sogeor.com/v1/products/actuator/swagger-ui
