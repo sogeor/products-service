@@ -31,17 +31,18 @@ configurations {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.springframework.boot:spring-boot-starter-kafka")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-security-oauth2-resource-server")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.springframework.security:spring-security-test")
 
-    compileOnly("org.jetbrains:annotations:${property("o.jetbrains.annotations")}")
+    implementation("org.jetbrains:annotations:${property("o.jetbrains.annotations")}")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("org.springdoc:springdoc-openapi-starter-webflux-api:${
         property("o.springdoc.springdoc-openapi-starter-webflux-api")
@@ -53,12 +54,11 @@ dependencies {
         property("o.projectlombok.lombok-mapstruct-binding")
     }")
 
-    implementation("com.zaxxer:HikariCP:${property("c.zaxxer.HikariCP")}")
     implementation("org.mapstruct:mapstruct:${property("o.mapstruct.mapstruct")}")
     annotationProcessor("org.mapstruct:mapstruct-processor:${property("o.mapstruct.mapstruct")}")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    runtimeOnly("org.postgresql:r2dbc-postgresql")
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
