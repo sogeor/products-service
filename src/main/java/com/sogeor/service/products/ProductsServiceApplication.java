@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @since 1.0.0-RC1
  */
-@OpenAPIDefinition(servers = @Server(url = "https://api.sogeor.com"))
+@OpenAPIDefinition(servers = @Server(url = "https://api.sogeor.com/v1/products"))
 @SpringBootApplication
 public class ProductsServiceApplication {
 
