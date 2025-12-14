@@ -94,4 +94,8 @@ public class ProductService {
                                 })));
     }
 
+    public Mono<@NotNull Long> getNumberOfPages(int pageSize) {
+        return productRepository.findAll().count().map(number -> number / pageSize);
+    }
+
 }

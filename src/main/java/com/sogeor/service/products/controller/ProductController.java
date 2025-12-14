@@ -70,4 +70,9 @@ public class ProductController {
                              .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/numberOfPages")
+    public Mono<@NotNull Long> getNumberOfPages(@RequestParam(defaultValue = "10") int pageSize) {
+        return productService.getNumberOfPages(pageSize);
+    }
+
 }
