@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 /**
  * @since 1.0.0-RC1
@@ -23,7 +22,7 @@ public class ProductRequest {
     /**
      * @since 1.0.0-RC1
      */
-    private @NotNull UUID category;
+    private @NotNull String category;
 
     /**
      * @since 1.0.0-RC1

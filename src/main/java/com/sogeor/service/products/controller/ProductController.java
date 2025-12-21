@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 /**
  * @since 1.0.0-RC1
  */
@@ -50,7 +48,7 @@ public class ProductController {
      * @since 1.0.0-RC1
      */
     @GetMapping("/{uuid}")
-    public Mono<@NotNull ResponseEntity<@NotNull ProductResponse>> get(@PathVariable @NonNull UUID uuid) {
+    public Mono<@NotNull ResponseEntity<@NotNull ProductResponse>> get(@PathVariable @NonNull String uuid) {
         return service.get(uuid).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
@@ -58,7 +56,7 @@ public class ProductController {
      * @since 1.0.0-RC1
      */
     @GetMapping("/")
-    public Flux<@NotNull ProductResponse> get(@RequestParam(required = false) UUID category, @RequestParam int page,
+    public Flux<@NotNull ProductResponse> get(@RequestParam(required = false) String category, @RequestParam int page,
                                               @RequestParam int count) {
         return category == null ? service.get(page, count) : service.get(category, page, count);
     }
@@ -67,7 +65,7 @@ public class ProductController {
      * @since 1.0.0-RC1
      */
     @PutMapping("/{uuid}")
-    public Mono<@NotNull ResponseEntity<@NotNull ProductResponse>> createOrUpdate(@PathVariable @NonNull UUID uuid,
+    public Mono<@NotNull ResponseEntity<@NotNull ProductResponse>> createOrUpdate(@PathVariable @NonNull String uuid,
                                                                                   @Valid @RequestBody ProductRequest request) {
         return service.createOrUpdate(uuid, request)
                       .map(ResponseEntity::ok)
@@ -78,7 +76,7 @@ public class ProductController {
      * @since 1.0.0-RC1
      */
     @DeleteMapping("/{uuid}")
-    public Mono<@NotNull ResponseEntity<@NotNull Void>> delete(@PathVariable @NonNull UUID uuid) {
+    public Mono<@NotNull ResponseEntity<@NotNull Void>> delete(@PathVariable @NonNull String uuid) {
         return service.delete(uuid)
                       .<@NotNull ResponseEntity<@NotNull Void>>then(
                               Mono.fromCallable(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build()))

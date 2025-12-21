@@ -46,7 +46,10 @@ class ProductCategoryServiceTest {
         // Given
         ProductCategoryRequest request = ProductCategoryRequest.builder().name("Category 1").build();
         ProductCategory category = ProductCategory.builder().name("Category 1").build();
-        ProductCategory savedCategory = ProductCategory.builder().uuid(UUID.randomUUID()).name("Category 1").build();
+        ProductCategory savedCategory = ProductCategory.builder()
+                                                       .uuid(UUID.randomUUID().toString())
+                                                       .name("Category 1")
+                                                       .build();
         ProductCategoryResponse response = ProductCategoryResponse.builder()
                                                                   .uuid(savedCategory.getUuid())
                                                                   .name("Category 1")
@@ -74,7 +77,7 @@ class ProductCategoryServiceTest {
     @DisplayName("get: should return category response when found")
     void get_shouldReturnResponse_whenFound() {
         // Given
-        UUID uuid = UUID.randomUUID();
+        String uuid = UUID.randomUUID().toString();
         ProductCategory category = ProductCategory.builder().uuid(uuid).name("Category 1").build();
         ProductCategoryResponse response = ProductCategoryResponse.builder().uuid(uuid).name("Category 1").build();
 
@@ -92,7 +95,7 @@ class ProductCategoryServiceTest {
     @DisplayName("get: should return empty when not found")
     void get_shouldReturnEmpty_whenNotFound() {
         // Given
-        UUID uuid = UUID.randomUUID();
+        String uuid = UUID.randomUUID().toString();
         when(repository.findById(uuid)).thenReturn(Mono.empty());
 
         // When
@@ -106,7 +109,7 @@ class ProductCategoryServiceTest {
     @DisplayName("createOrUpdate: should update category, send event, and return response")
     void createOrUpdate_shouldUpdateCategoryAndSendEvent() {
         // Given
-        UUID uuid = UUID.randomUUID();
+        String uuid = UUID.randomUUID().toString();
         ProductCategoryRequest request = ProductCategoryRequest.builder().name("Updated Category").build();
         ProductCategory category = ProductCategory.builder().name("Updated Category").build();
         ProductCategory savedCategory = ProductCategory.builder().uuid(uuid).name("Updated Category").build();
@@ -144,7 +147,7 @@ class ProductCategoryServiceTest {
     @DisplayName("delete: should delete category and send event")
     void delete_shouldDeleteCategoryAndSendEvent() {
         // Given
-        UUID uuid = UUID.randomUUID();
+        String uuid = UUID.randomUUID().toString();
         when(repository.deleteById(uuid)).thenReturn(Mono.empty());
         when(eventProducer.send(any(ProductCategoryEvent.class))).thenReturn(Mono.empty());
 
@@ -166,8 +169,8 @@ class ProductCategoryServiceTest {
         // Given
         String name = "test";
         int limit = 10;
-        ProductCategory category1 = ProductCategory.builder().uuid(UUID.randomUUID()).name("Test 1").build();
-        ProductCategory category2 = ProductCategory.builder().uuid(UUID.randomUUID()).name("Test 2").build();
+        ProductCategory category1 = ProductCategory.builder().uuid(UUID.randomUUID().toString()).name("Test 1").build();
+        ProductCategory category2 = ProductCategory.builder().uuid(UUID.randomUUID().toString()).name("Test 2").build();
         ProductCategoryResponse response1 = ProductCategoryResponse.builder()
                                                                    .uuid(category1.getUuid())
                                                                    .name("Test 1")

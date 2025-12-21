@@ -19,7 +19,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.UUID;
 
 /**
  * @since 1.0.0-RC1
@@ -50,7 +49,6 @@ public class ProductService {
     @Transactional
     public Mono<@NotNull ProductResponse> create(ProductRequest request) {
         final var product = mapper.toEntity(request);
-        product.setUuid(UUID.randomUUID());
         return repository.save(product)
                          .flatMap(saved -> eventProducer.send(ProductEvent.builder()
                                                                           .type(EventType.PRODUCT_CREATED)
@@ -64,7 +62,7 @@ public class ProductService {
      * @since 1.0.0-RC1
      */
     @Transactional
-    public Mono<@NotNull ProductResponse> get(UUID uuid) {
+    public Mono<@NotNull ProductResponse> get(String uuid) {
         return repository.findById(uuid).map(mapper::toResponse);
     }
 
@@ -80,7 +78,7 @@ public class ProductService {
      * @since 1.0.0-RC1
      */
     @Transactional
-    public Flux<@NotNull ProductResponse> get(UUID category, int page, int count) {
+    public Flux<@NotNull ProductResponse> get(String category, int page, int count) {
         return repository.findProductsByCategory(category, Pageable.ofSize(count).withPage(page))
                          .map(mapper::toResponse);
     }
@@ -89,7 +87,7 @@ public class ProductService {
      * @since 1.0.0-RC1
      */
     @Transactional
-    public Mono<@NotNull ProductResponse> createOrUpdate(UUID uuid, ProductRequest request) {
+    public Mono<@NotNull ProductResponse> createOrUpdate(String uuid, ProductRequest request) {
         final var product = mapper.toEntity(request);
         product.setUuid(uuid);
         return repository.save(product)
@@ -105,7 +103,7 @@ public class ProductService {
      * @since 1.0.0-RC1
      */
     @Transactional
-    public Mono<@NotNull Void> delete(UUID uuid) {
+    public Mono<@NotNull Void> delete(String uuid) {
         return repository.deleteById(uuid)
                          .then(Mono.defer(() -> eventProducer.send(ProductEvent.builder()
                                                                                .type(EventType.PRODUCT_DELETED)

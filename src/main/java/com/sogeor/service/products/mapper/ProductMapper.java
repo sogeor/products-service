@@ -5,7 +5,6 @@ import com.sogeor.service.products.dto.web.ProductRequest;
 import com.sogeor.service.products.dto.web.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 /**
  * @since 1.0.0-RC1

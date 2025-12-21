@@ -24,7 +24,8 @@ public class MongoConfig {
 
     @Bean
     public MongoCustomConversions customConversions() {
-        return new MongoCustomConversions(Arrays.asList(new UUIDToStringConverter(), new StringToUUIDConverter(), new ObjectIdToUUIDConverter()));
+        return new MongoCustomConversions(
+                Arrays.asList(new UUIDToStringConverter(), new StringToUUIDConverter(), new ObjectIdToUUIDConverter()));
     }
 
     public static class UUIDToStringConverter implements Converter<@NotNull UUID, @NotNull String> {
@@ -52,14 +53,14 @@ public class MongoConfig {
     public static class ObjectIdToUUIDConverter implements Converter<@NotNull ObjectId, @NotNull UUID> {
 
         private static final ZoneOffset UTC = ZoneOffset.UTC;
-        private static final Instant UUID_1_EPOCH =
-                LocalDateTime.of(1582, 10, 15, 0, 0, 0).toInstant(UTC);
+
+        private static final Instant UUID_1_EPOCH = LocalDateTime.of(1582, 10, 15, 0, 0, 0).toInstant(UTC);
+
         private static final long UUID_TICKS_PER_SECOND = 10_000_000L;
 
         private static long unixTimeToUuidTime(Instant instant) {
             Duration duration = Duration.between(UUID_1_EPOCH, instant);
-            return duration.getSeconds() * UUID_TICKS_PER_SECOND +
-                   duration.getNano() / 100;
+            return duration.getSeconds() * UUID_TICKS_PER_SECOND + duration.getNano() / 100;
         }
 
         public static UUID objectIdToUuid(ObjectId objectId) {
@@ -67,9 +68,7 @@ public class MongoConfig {
             byte[] bytes = objectId.toByteArray();
 
             // Получаем время генерации ObjectId
-            Instant generationTime = objectId.getDate().toInstant()
-                                             .atZone(UTC)
-                                             .toInstant();
+            Instant generationTime = objectId.getDate().toInstant().atZone(UTC).toInstant();
 
             // Преобразуем время в UUID время
             long time = unixTimeToUuidTime(generationTime);
@@ -78,20 +77,12 @@ public class MongoConfig {
             time |= (bytes[4] >> 6) & 0x3L;
 
             // Формируем most significant bits
-            long mostSigBits = 0x1000L | ((time >> 48) & 0x0FFFL) |
-                               ((time >> 16) & 0xFFFF0000L) |
-                               (time << 32);
+            long mostSigBits = 0x1000L | ((time >> 48) & 0x0FFFL) | ((time >> 16) & 0xFFFF0000L) | (time << 32);
 
             // Формируем least significant bits (версия 2 - DCE Security)
-            long leastSigBits = 2L << 62 |
-                                ((bytes[4] & 0x3F) & 0xFFL) << 56 |
-                                ((bytes[5] & 0xFFL) << 48) |
-                                ((bytes[6] & 0xFFL) << 40) |
-                                ((bytes[7] & 0xFFL) << 32) |
-                                ((bytes[8] & 0xFFL) << 24) |
-                                ((bytes[9] & 0xFFL) << 16) |
-                                ((bytes[10] & 0xFFL) << 8) |
-                                (bytes[11] & 0xFFL);
+            long leastSigBits = 2L << 62 | ((bytes[4] & 0x3F) & 0xFFL) << 56 | ((bytes[5] & 0xFFL) << 48) |
+                                ((bytes[6] & 0xFFL) << 40) | ((bytes[7] & 0xFFL) << 32) | ((bytes[8] & 0xFFL) << 24) |
+                                ((bytes[9] & 0xFFL) << 16) | ((bytes[10] & 0xFFL) << 8) | (bytes[11] & 0xFFL);
 
             return new UUID(mostSigBits, leastSigBits);
         }

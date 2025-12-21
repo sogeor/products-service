@@ -18,7 +18,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.util.UUID;
 
 /**
  * @since 1.0.0-RC1
@@ -49,7 +48,6 @@ public class ProductCategoryService {
     @Transactional
     public Mono<@NotNull ProductCategoryResponse> create(ProductCategoryRequest request) {
         final var category = mapper.toEntity(request);
-        category.setUuid(UUID.randomUUID());
         return repository.save(category)
                          .flatMap(saved -> eventProducer.send(ProductCategoryEvent.builder()
                                                                                   .type(EventType.PRODUCT_CATEGORY_CREATED)
@@ -63,7 +61,7 @@ public class ProductCategoryService {
      * @since 1.0.0-RC1
      */
     @Transactional
-    public Mono<@NotNull ProductCategoryResponse> get(UUID uuid) {
+    public Mono<@NotNull ProductCategoryResponse> get(String uuid) {
         return repository.findById(uuid).map(mapper::toResponse);
     }
 
@@ -71,7 +69,7 @@ public class ProductCategoryService {
      * @since 1.0.0-RC1
      */
     @Transactional
-    public Mono<@NotNull ProductCategoryResponse> createOrUpdate(UUID uuid, ProductCategoryRequest request) {
+    public Mono<@NotNull ProductCategoryResponse> createOrUpdate(String uuid, ProductCategoryRequest request) {
         final var category = mapper.toEntity(request);
         category.setUuid(uuid);
         return repository.save(category)
@@ -87,7 +85,7 @@ public class ProductCategoryService {
      * @since 1.0.0-RC1
      */
     @Transactional
-    public Mono<@NotNull Void> delete(UUID uuid) {
+    public Mono<@NotNull Void> delete(String uuid) {
         return repository.deleteById(uuid)
                          .then(Mono.defer(() -> eventProducer.send(ProductCategoryEvent.builder()
                                                                                        .type(EventType.PRODUCT_CATEGORY_DELETED)

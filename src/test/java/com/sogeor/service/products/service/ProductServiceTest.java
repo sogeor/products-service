@@ -48,10 +48,10 @@ class ProductServiceTest {
         // Given
         ProductRequest request = ProductRequest.builder().name("Product 1").build();
         Product product = Product.builder().name("Product 1").build();
-        Product savedProduct = Product.builder().uuid(UUID.randomUUID()).name("Product 1").build();
+        Product savedProduct = Product.builder().uuid(UUID.randomUUID().toString()).name("Product 1").build();
         ProductResponse response = ProductResponse.builder()
                                                   .uuid(savedProduct.getUuid())
-                                                  .category(UUID.randomUUID())
+                                                  .category(UUID.randomUUID().toString())
                                                   .name("Product 1")
                                                   .price(BigDecimal.ONE)
                                                   .build();
@@ -76,11 +76,11 @@ class ProductServiceTest {
     @DisplayName("get: should return product response when found by id")
     void get_shouldReturnResponse_whenFoundById() {
         // Given
-        UUID uuid = UUID.randomUUID();
+        String uuid = UUID.randomUUID().toString();
         Product product = Product.builder().uuid(uuid).name("Product 1").build();
         ProductResponse response = ProductResponse.builder()
                                                   .uuid(uuid)
-                                                  .category(UUID.randomUUID())
+                                                  .category(UUID.randomUUID().toString())
                                                   .name("Product 1")
                                                   .price(BigDecimal.ONE)
                                                   .build();
@@ -99,20 +99,20 @@ class ProductServiceTest {
     @DisplayName("get: should return product responses when found by category with pagination")
     void get_shouldReturnResponses_whenFoundByCategory() {
         // Given
-        UUID categoryId = UUID.randomUUID();
+        String categoryId = UUID.randomUUID().toString();
         int page = 0;
         int count = 10;
-        Product product1 = Product.builder().uuid(UUID.randomUUID()).category(categoryId).build();
-        Product product2 = Product.builder().uuid(UUID.randomUUID()).category(categoryId).build();
+        Product product1 = Product.builder().uuid(UUID.randomUUID().toString()).category(categoryId).build();
+        Product product2 = Product.builder().uuid(UUID.randomUUID().toString()).category(categoryId).build();
         ProductResponse response1 = ProductResponse.builder()
                                                    .uuid(product1.getUuid())
-                                                   .category(UUID.randomUUID())
+                                                   .category(UUID.randomUUID().toString())
                                                    .name("1")
                                                    .price(BigDecimal.ONE)
                                                    .build();
         ProductResponse response2 = ProductResponse.builder()
                                                    .uuid(product2.getUuid())
-                                                   .category(UUID.randomUUID())
+                                                   .category(UUID.randomUUID().toString())
                                                    .name("2")
                                                    .price(BigDecimal.ONE)
                                                    .build();
@@ -139,13 +139,13 @@ class ProductServiceTest {
     @DisplayName("createOrUpdate: should update product, send event, and return response")
     void createOrUpdate_shouldUpdateProductAndSendEvent() {
         // Given
-        UUID uuid = UUID.randomUUID();
+        String uuid = UUID.randomUUID().toString();
         ProductRequest request = ProductRequest.builder().name("Updated Product").build();
         Product product = Product.builder().name("Updated Product").build();
         Product savedProduct = Product.builder().uuid(uuid).name("Updated Product").build();
         ProductResponse response = ProductResponse.builder()
                                                   .uuid(uuid)
-                                                  .category(UUID.randomUUID())
+                                                  .category(UUID.randomUUID().toString())
                                                   .name("Updated Product")
                                                   .price(BigDecimal.ONE)
                                                   .build();
@@ -182,7 +182,7 @@ class ProductServiceTest {
     @DisplayName("delete: should delete product and send event")
     void delete_shouldDeleteProductAndSendEvent() {
         // Given
-        UUID uuid = UUID.randomUUID();
+        String uuid = UUID.randomUUID().toString();
         when(repository.deleteById(uuid)).thenReturn(Mono.empty());
         when(eventProducer.send(any(ProductEvent.class))).thenReturn(Mono.empty());
 
@@ -203,17 +203,17 @@ class ProductServiceTest {
         // Given
         String name = "test";
         int limit = 10;
-        Product product1 = Product.builder().uuid(UUID.randomUUID()).name("Test 1").build();
-        Product product2 = Product.builder().uuid(UUID.randomUUID()).name("Test 2").build();
+        Product product1 = Product.builder().uuid(UUID.randomUUID().toString()).name("Test 1").build();
+        Product product2 = Product.builder().uuid(UUID.randomUUID().toString()).name("Test 2").build();
         ProductResponse response1 = ProductResponse.builder()
                                                    .uuid(product1.getUuid())
-                                                   .category(UUID.randomUUID())
+                                                   .category(UUID.randomUUID().toString())
                                                    .name("Test 1")
                                                    .price(BigDecimal.ONE)
                                                    .build();
         ProductResponse response2 = ProductResponse.builder()
                                                    .uuid(product2.getUuid())
-                                                   .category(UUID.randomUUID())
+                                                   .category(UUID.randomUUID().toString())
                                                    .name("Test 2")
                                                    .price(BigDecimal.ONE)
                                                    .build();

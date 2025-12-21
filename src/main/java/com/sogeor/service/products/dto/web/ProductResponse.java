@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 /**
  * @since 1.0.0-RC1
@@ -21,12 +20,12 @@ public class ProductResponse {
     /**
      * @since 1.0.0-RC1
      */
-    private @NonNull UUID uuid;
+    private @NonNull String uuid;
 
     /**
      * @since 1.0.0-RC1
      */
-    private @NonNull UUID category;
+    private @NonNull String category;
 
     /**
      * @since 1.0.0-RC1

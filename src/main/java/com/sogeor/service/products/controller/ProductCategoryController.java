@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 /**
  * @since 1.0.0-RC1
  */
@@ -50,7 +48,7 @@ public class ProductCategoryController {
      * @since 1.0.0-RC1
      */
     @GetMapping("/{uuid}")
-    public Mono<@NotNull ResponseEntity<@NotNull ProductCategoryResponse>> get(@PathVariable @NonNull UUID uuid) {
+    public Mono<@NotNull ResponseEntity<@NotNull ProductCategoryResponse>> get(@PathVariable @NonNull String uuid) {
         return service.get(uuid).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
@@ -59,7 +57,7 @@ public class ProductCategoryController {
      */
     @PutMapping("/{uuid}")
     public Mono<@NotNull ResponseEntity<@NotNull ProductCategoryResponse>> createOrUpdate(
-            @PathVariable @NonNull UUID uuid, @Valid @RequestBody ProductCategoryRequest request) {
+            @PathVariable @NonNull String uuid, @Valid @RequestBody ProductCategoryRequest request) {
         return service.createOrUpdate(uuid, request)
                       .map(ResponseEntity::ok)
                       .defaultIfEmpty(ResponseEntity.notFound().build());
@@ -69,7 +67,7 @@ public class ProductCategoryController {
      * @since 1.0.0-RC1
      */
     @DeleteMapping("/{uuid}")
-    public Mono<@NotNull ResponseEntity<@NotNull Void>> delete(@PathVariable @NonNull UUID uuid) {
+    public Mono<@NotNull ResponseEntity<@NotNull Void>> delete(@PathVariable @NonNull String uuid) {
         return service.delete(uuid)
                       .<@NotNull ResponseEntity<@NotNull Void>>then(
                               Mono.fromCallable(() -> ResponseEntity.status(HttpStatus.NO_CONTENT).build()))

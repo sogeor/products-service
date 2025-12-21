@@ -13,8 +13,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
-
 /**
  * @since 1.0.0-RC1
  */
@@ -26,7 +24,7 @@ public class EventProducer {
     /**
      * @since 1.0.0-RC1
      */
-    private final @NotNull KafkaTemplate<@NotNull UUID, @NotNull String> kafkaTemplate;
+    private final @NotNull KafkaTemplate<@NotNull String, @NotNull String> kafkaTemplate;
 
     /**
      * @since 1.0.0-RC1
@@ -36,7 +34,7 @@ public class EventProducer {
     /**
      * @since 1.0.0-RC1
      */
-    private @NotNull Mono<@NotNull Void> send(final @NotNull EventType type, final @NotNull UUID key,
+    private @NotNull Mono<@NotNull Void> send(final @NotNull EventType type, final @NotNull String key,
                                               final @NotNull Object data) {
         return Mono.fromCallable(() -> {
                        try {

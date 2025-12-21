@@ -7,13 +7,11 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
-import java.util.UUID;
-
 /**
  * @since 1.0.0-RC1
  */
 @Repository
-public interface ProductCategoryRepository extends ReactiveMongoRepository<@NotNull ProductCategory, @NotNull UUID> {
+public interface ProductCategoryRepository extends ReactiveMongoRepository<@NotNull ProductCategory, @NotNull String> {
 
     /**
      * @since 1.0.0-RC1
