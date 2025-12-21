@@ -14,7 +14,7 @@ import java.util.UUID;
  * @since 1.0.0-RC1
  */
 @Configuration
-@EnableReactiveMongoRepositories
+@EnableReactiveMongoRepositories("com.sogeor.service.products")
 public class MongoConfig {
 
     @Bean
