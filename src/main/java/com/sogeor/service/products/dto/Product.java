@@ -34,6 +34,7 @@ public class Product {
     /**
      * @since 1.0.0-RC1
      */
+    @Field(targetType = FieldType.STRING)
     private UUID category;
 
     /**
