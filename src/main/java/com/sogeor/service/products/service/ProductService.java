@@ -123,4 +123,12 @@ public class ProductService {
         return repository.findProductsByNameContainsIgnoreCase(name, Limit.of(limit)).map(mapper::toResponse);
     }
 
+    /**
+     * @since 1.0.0-RC1
+     */
+    @Transactional
+    public Mono<@NotNull Long> about() {
+        return repository.count();
+    }
+
 }

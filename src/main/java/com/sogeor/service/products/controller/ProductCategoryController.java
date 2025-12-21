@@ -85,4 +85,12 @@ public class ProductCategoryController {
         return service.search(name, limit);
     }
 
+    /**
+     * @since 1.0.0-RC1
+     */
+    @GetMapping("/about")
+    public Mono<@NotNull Long> about() {
+        return service.about();
+    }
+
 }
