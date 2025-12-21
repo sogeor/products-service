@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public class ProductCategory {
      * @since 1.0.0-RC1
      */
     @Id
+    @Field(targetType = FieldType.STRING)
     private UUID uuid;
 
     /**

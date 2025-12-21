@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -27,6 +28,7 @@ public class Product {
      * @since 1.0.0-RC1
      */
     @Id
+    @Field(targetType = FieldType.STRING)
     private UUID uuid;
 
     /**
