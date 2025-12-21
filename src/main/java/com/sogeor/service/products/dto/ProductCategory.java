@@ -24,12 +24,6 @@ public class ProductCategory {
      * @since 1.0.0-RC1
      */
     @Id
-    private String _id;
-
-    /**
-     * @since 1.0.0-RC1
-     */
-    @Id
     private UUID uuid;
 
     /**

@@ -16,7 +16,7 @@ public interface ProductMapper {
     /**
      * @since 1.0.0-RC1
      */
-    @Mappings({@Mapping(target = "_id", ignore = true), @Mapping(target = "uuid", ignore = true)})
+    @Mapping(target = "uuid", ignore = true)
     Product toEntity(ProductRequest request);
 
     /**
