@@ -49,6 +49,7 @@ public class ProductCategoryService {
     @Transactional
     public Mono<@NotNull ProductCategoryResponse> create(ProductCategoryRequest request) {
         final var category = mapper.toEntity(request);
+        category.setUuid(UUID.randomUUID());
         return repository.save(category)
                          .flatMap(saved -> eventProducer.send(ProductCategoryEvent.builder()
                                                                                   .type(EventType.PRODUCT_CATEGORY_CREATED)

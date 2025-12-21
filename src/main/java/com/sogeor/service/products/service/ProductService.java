@@ -49,8 +49,9 @@ public class ProductService {
      */
     @Transactional
     public Mono<@NotNull ProductResponse> create(ProductRequest request) {
-        final var category = mapper.toEntity(request);
-        return repository.save(category)
+        final var product = mapper.toEntity(request);
+        product.setUuid(UUID.randomUUID());
+        return repository.save(product)
                          .flatMap(saved -> eventProducer.send(ProductEvent.builder()
                                                                           .type(EventType.PRODUCT_CREATED)
                                                                           .instant(Instant.now())
@@ -89,9 +90,9 @@ public class ProductService {
      */
     @Transactional
     public Mono<@NotNull ProductResponse> createOrUpdate(UUID uuid, ProductRequest request) {
-        final var category = mapper.toEntity(request);
-        category.setUuid(uuid);
-        return repository.save(category)
+        final var product = mapper.toEntity(request);
+        product.setUuid(uuid);
+        return repository.save(product)
                          .flatMap(saved -> eventProducer.send(ProductEvent.builder()
                                                                           .type(EventType.PRODUCT_CREATED)
                                                                           .instant(Instant.now())
