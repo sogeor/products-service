@@ -58,9 +58,9 @@ public class ProductController {
      * @since 1.0.0-RC1
      */
     @GetMapping("/")
-    public Flux<@NotNull ProductResponse> get(@RequestParam @NonNull UUID category, @RequestParam int page,
+    public Flux<@NotNull ProductResponse> get(@RequestParam(required = false) UUID category, @RequestParam int page,
                                               @RequestParam int count) {
-        return service.get(category, page, count);
+        return category == null ? service.get(page, count) : service.get(category, page, count);
     }
 
     /**

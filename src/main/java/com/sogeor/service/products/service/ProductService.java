@@ -71,6 +71,14 @@ public class ProductService {
      * @since 1.0.0-RC1
      */
     @Transactional
+    public Flux<@NotNull ProductResponse> get(int page, int count) {
+        return repository.findAll().skip((long) page * count).take(count).map(mapper::toResponse);
+    }
+
+    /**
+     * @since 1.0.0-RC1
+     */
+    @Transactional
     public Flux<@NotNull ProductResponse> get(UUID category, int page, int count) {
         return repository.findProductsByCategory(category, Pageable.ofSize(count).withPage(page))
                          .map(mapper::toResponse);
