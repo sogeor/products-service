@@ -1,133 +1,235 @@
 package com.sogeor.service.products.service;
 
-import com.sogeor.service.products.domain.Product;
-import com.sogeor.service.products.dto.ProductEvent;
-import com.sogeor.service.products.dto.ProductRequest;
-import com.sogeor.service.products.dto.ProductResponse;
-import com.sogeor.service.products.event.ProductEventProducer;
+import com.sogeor.service.products.dto.Product;
+import com.sogeor.service.products.dto.event.EventType;
+import com.sogeor.service.products.dto.event.ProductEvent;
+import com.sogeor.service.products.dto.web.ProductRequest;
+import com.sogeor.service.products.dto.web.ProductResponse;
+import com.sogeor.service.products.event.EventProducer;
 import com.sogeor.service.products.mapper.ProductMapper;
 import com.sogeor.service.products.repository.ProductRepository;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
 
     @Mock
-    private ProductRepository productRepository;
+    private ProductRepository repository;
 
     @Mock
-    private ProductMapper productMapper;
+    private ProductMapper mapper;
 
     @Mock
-    private ProductEventProducer productEventProducer;
+    private EventProducer eventProducer;
 
     @InjectMocks
-    private ProductService productService;
+    private ProductService service;
 
-    private Product product;
+    @Test
+    @DisplayName("create: should save product, send event, and return response")
+    void create_shouldSaveProductAndSendEvent() {
+        // Given
+        ProductRequest request = ProductRequest.builder().name("Product 1").build();
+        Product product = Product.builder().name("Product 1").build();
+        Product savedProduct = Product.builder().uuid(UUID.randomUUID()).name("Product 1").build();
+        ProductResponse response = ProductResponse.builder()
+                                                  .uuid(savedProduct.getUuid())
+                                                  .category(UUID.randomUUID())
+                                                  .name("Product 1")
+                                                  .price(BigDecimal.ONE)
+                                                  .build();
 
-    private ProductRequest productRequest;
+        when(mapper.toEntity(request)).thenReturn(product);
+        when(repository.save(product)).thenReturn(Mono.just(savedProduct));
+        when(eventProducer.send(any(ProductEvent.class))).thenReturn(Mono.empty());
+        when(mapper.toResponse(savedProduct)).thenReturn(response);
 
-    private ProductResponse productResponse;
+        // When
+        Mono<ProductResponse> result = service.create(request);
 
-    @BeforeEach
-    void setUp() {
-        product = Product.builder()
-                         .id("1")
-                         .name("Test Product")
-                         .price(BigDecimal.TEN)
-                         .category("Test Category")
-                         .build();
+        // Then
+        StepVerifier.create(result).expectNext(response).verifyComplete();
 
-        productRequest = ProductRequest.builder()
-                                       .name("Test Product")
-                                       .price(BigDecimal.TEN)
-                                       .category("Test Category")
-                                       .build();
-
-        productResponse = ProductResponse.builder()
-                                         .id("1")
-                                         .name("Test Product")
-                                         .price(BigDecimal.TEN)
-                                         .category("Test Category")
-                                         .build();
+        verify(repository).save(product);
+        verify(eventProducer).send(argThat((ProductEvent event) -> event.getType() == EventType.PRODUCT_CREATED &&
+                                                                   event.getProduct().equals(savedProduct)));
     }
 
     @Test
-    void getAllProducts() {
-        when(productRepository.findAll()).thenReturn(Flux.just(product));
-        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+    @DisplayName("get: should return product response when found by id")
+    void get_shouldReturnResponse_whenFoundById() {
+        // Given
+        UUID uuid = UUID.randomUUID();
+        Product product = Product.builder().uuid(uuid).name("Product 1").build();
+        ProductResponse response = ProductResponse.builder()
+                                                  .uuid(uuid)
+                                                  .category(UUID.randomUUID())
+                                                  .name("Product 1")
+                                                  .price(BigDecimal.ONE)
+                                                  .build();
 
-        Flux<@NotNull ProductResponse> result = productService.getAllProducts(PageRequest.of(0, 10));
+        when(repository.findById(uuid)).thenReturn(Mono.just(product));
+        when(mapper.toResponse(product)).thenReturn(response);
 
-        StepVerifier.create(result).expectNext(productResponse).verifyComplete();
+        // When
+        Mono<ProductResponse> result = service.get(uuid);
+
+        // Then
+        StepVerifier.create(result).expectNext(response).verifyComplete();
     }
 
     @Test
-    void getProductById() {
-        when(productRepository.findById("1")).thenReturn(Mono.just(product));
-        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
+    @DisplayName("get: should return product responses when found by category with pagination")
+    void get_shouldReturnResponses_whenFoundByCategory() {
+        // Given
+        UUID categoryId = UUID.randomUUID();
+        int page = 0;
+        int count = 10;
+        Product product1 = Product.builder().uuid(UUID.randomUUID()).category(categoryId).build();
+        Product product2 = Product.builder().uuid(UUID.randomUUID()).category(categoryId).build();
+        ProductResponse response1 = ProductResponse.builder()
+                                                   .uuid(product1.getUuid())
+                                                   .category(UUID.randomUUID())
+                                                   .name("1")
+                                                   .price(BigDecimal.ONE)
+                                                   .build();
+        ProductResponse response2 = ProductResponse.builder()
+                                                   .uuid(product2.getUuid())
+                                                   .category(UUID.randomUUID())
+                                                   .name("2")
+                                                   .price(BigDecimal.ONE)
+                                                   .build();
 
-        Mono<@NotNull ProductResponse> result = productService.getProductById("1");
+        // Note: Pageable equality might be strict, so use any(Pageable.class) or
+        // eq(Pageable.ofSize(count).withPage(page)) if equals logic works.
+        // It's safer to rely on any() or ArgumentCaptor if Pageable equals isn't
+        // standard, but typically it works.
+        when(repository.findProductsByCategory(eq(categoryId), any(Pageable.class))).thenReturn(
+                Flux.just(product1, product2));
+        when(mapper.toResponse(product1)).thenReturn(response1);
+        when(mapper.toResponse(product2)).thenReturn(response2);
 
-        StepVerifier.create(result).expectNext(productResponse).verifyComplete();
+        // When
+        Flux<ProductResponse> result = service.get(categoryId, page, count);
+
+        // Then
+        StepVerifier.create(result).expectNext(response1).expectNext(response2).verifyComplete();
+
+        verify(repository).findProductsByCategory(eq(categoryId), any(Pageable.class));
     }
 
     @Test
-    void createProduct() {
-        when(productMapper.toEntity(any(ProductRequest.class))).thenReturn(product);
-        when(productRepository.save(any(Product.class))).thenReturn(Mono.just(product));
-        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
-        when(productEventProducer.sendEvent(any(ProductEvent.class))).thenReturn(Mono.empty());
+    @DisplayName("createOrUpdate: should update product, send event, and return response")
+    void createOrUpdate_shouldUpdateProductAndSendEvent() {
+        // Given
+        UUID uuid = UUID.randomUUID();
+        ProductRequest request = ProductRequest.builder().name("Updated Product").build();
+        Product product = Product.builder().name("Updated Product").build();
+        Product savedProduct = Product.builder().uuid(uuid).name("Updated Product").build();
+        ProductResponse response = ProductResponse.builder()
+                                                  .uuid(uuid)
+                                                  .category(UUID.randomUUID())
+                                                  .name("Updated Product")
+                                                  .price(BigDecimal.ONE)
+                                                  .build();
 
-        Mono<@NotNull ProductResponse> result = productService.createProduct(productRequest);
+        when(mapper.toEntity(request)).thenReturn(product);
+        when(repository.save(product)).thenReturn(Mono.just(savedProduct));
+        when(eventProducer.send(any(ProductEvent.class))).thenReturn(Mono.empty());
+        when(mapper.toResponse(savedProduct)).thenReturn(response);
 
-        StepVerifier.create(result).expectNext(productResponse).verifyComplete();
+        // When
+        Mono<ProductResponse> result = service.createOrUpdate(uuid, request);
 
-        verify(productEventProducer).sendEvent(any(ProductEvent.class));
+        // Then
+        StepVerifier.create(result).expectNext(response).verifyComplete();
+
+        assert product.getUuid().equals(uuid);
+
+        verify(repository).save(product);
+
+        // Note: The service sends PRODUCT_CREATED even for createOrUpdate in the
+        // provided code.
+        // I should stick to what the code does, which is PRODUCT_CREATED.
+        // Wait, checking the view_file for ProductService line 88:
+        // .type(EventType.PRODUCT_CREATED).
+        // It seems the service code uses PRODUCT_CREATED for update too?
+        // ProductCategoryService uses PRODUCT_CATEGORY_CREATED_OR_UPDATED.
+        // ProductService uses PRODUCT_CREATED. I will assert PRODUCT_CREATED as per
+        // code.
+        verify(eventProducer).send(argThat((ProductEvent event) -> event.getType() == EventType.PRODUCT_CREATED &&
+                                                                   event.getProduct().equals(savedProduct)));
     }
 
     @Test
-    void updateProduct() {
-        when(productRepository.findById("1")).thenReturn(Mono.just(product));
-        when(productRepository.save(any(Product.class))).thenReturn(Mono.just(product));
-        when(productMapper.toResponse(any(Product.class))).thenReturn(productResponse);
-        when(productEventProducer.sendEvent(any(ProductEvent.class))).thenReturn(Mono.empty());
+    @DisplayName("delete: should delete product and send event")
+    void delete_shouldDeleteProductAndSendEvent() {
+        // Given
+        UUID uuid = UUID.randomUUID();
+        when(repository.deleteById(uuid)).thenReturn(Mono.empty());
+        when(eventProducer.send(any(ProductEvent.class))).thenReturn(Mono.empty());
 
-        Mono<@NotNull ProductResponse> result = productService.updateProduct("1", productRequest);
+        // When
+        Mono<Void> result = service.delete(uuid);
 
-        StepVerifier.create(result).expectNext(productResponse).verifyComplete();
-
-        verify(productEventProducer).sendEvent(any(ProductEvent.class));
-    }
-
-    @Test
-    void deleteProduct() {
-        when(productRepository.findById("1")).thenReturn(Mono.just(product));
-        when(productRepository.delete(any(Product.class))).thenReturn(Mono.empty());
-        when(productEventProducer.sendEvent(any(ProductEvent.class))).thenReturn(Mono.empty());
-
-        Mono<@NotNull Void> result = productService.deleteProduct("1");
-
+        // Then
         StepVerifier.create(result).verifyComplete();
 
-        verify(productEventProducer).sendEvent(any(ProductEvent.class));
+        verify(repository).deleteById(uuid);
+        verify(eventProducer).send(argThat((ProductEvent event) -> event.getType() == EventType.PRODUCT_DELETED &&
+                                                                   event.getProduct().getUuid().equals(uuid)));
+    }
+
+    @Test
+    @DisplayName("search: should return flux of products")
+    void search_shouldReturnProducts() {
+        // Given
+        String name = "test";
+        int limit = 10;
+        Product product1 = Product.builder().uuid(UUID.randomUUID()).name("Test 1").build();
+        Product product2 = Product.builder().uuid(UUID.randomUUID()).name("Test 2").build();
+        ProductResponse response1 = ProductResponse.builder()
+                                                   .uuid(product1.getUuid())
+                                                   .category(UUID.randomUUID())
+                                                   .name("Test 1")
+                                                   .price(BigDecimal.ONE)
+                                                   .build();
+        ProductResponse response2 = ProductResponse.builder()
+                                                   .uuid(product2.getUuid())
+                                                   .category(UUID.randomUUID())
+                                                   .name("Test 2")
+                                                   .price(BigDecimal.ONE)
+                                                   .build();
+
+        when(repository.findProductsByNameContainsIgnoreCase(eq(name), any(Limit.class))).thenReturn(
+                Flux.just(product1, product2));
+        when(mapper.toResponse(product1)).thenReturn(response1);
+        when(mapper.toResponse(product2)).thenReturn(response2);
+
+        // When
+        Flux<ProductResponse> result = service.search(name, limit);
+
+        // Then
+        StepVerifier.create(result).expectNext(response1).expectNext(response2).verifyComplete();
+
+        verify(repository).findProductsByNameContainsIgnoreCase(eq(name), any(Limit.class));
     }
 
 }

@@ -1,8 +1,8 @@
 package com.sogeor.service.products.controller;
 
-import com.sogeor.service.products.dto.web.ProductRequest;
-import com.sogeor.service.products.dto.web.ProductResponse;
-import com.sogeor.service.products.service.ProductService;
+import com.sogeor.service.products.dto.web.ProductCategoryRequest;
+import com.sogeor.service.products.dto.web.ProductCategoryResponse;
+import com.sogeor.service.products.service.ProductCategoryService;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -28,21 +28,21 @@ import java.util.UUID;
  * @since 1.0.0-RC1
  */
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/category")
 @RequiredArgsConstructor
-public class ProductController {
+public class ProductCategoryController {
 
     /**
      * @since 1.0.0-RC1
      */
-    private final ProductService service;
+    private final ProductCategoryService service;
 
     /**
      * @since 1.0.0-RC1
      */
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<@NotNull ProductResponse> create(@Valid @RequestBody ProductRequest request) {
+    public Mono<@NotNull ProductCategoryResponse> create(@Valid @RequestBody ProductCategoryRequest request) {
         return service.create(request);
     }
 
@@ -50,25 +50,16 @@ public class ProductController {
      * @since 1.0.0-RC1
      */
     @GetMapping("/{uuid}")
-    public Mono<@NotNull ResponseEntity<@NotNull ProductResponse>> get(@PathVariable @NonNull UUID uuid) {
+    public Mono<@NotNull ResponseEntity<@NotNull ProductCategoryResponse>> get(@PathVariable @NonNull UUID uuid) {
         return service.get(uuid).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     /**
      * @since 1.0.0-RC1
      */
-    @GetMapping("/")
-    public Flux<@NotNull ProductResponse> get(@RequestParam @NonNull UUID category, @RequestParam int page,
-                                              @RequestParam int count) {
-        return service.get(category, page, count);
-    }
-
-    /**
-     * @since 1.0.0-RC1
-     */
     @PutMapping("/{uuid}")
-    public Mono<@NotNull ResponseEntity<@NotNull ProductResponse>> createOrUpdate(@PathVariable @NonNull UUID uuid,
-                                                                                  @Valid @RequestBody ProductRequest request) {
+    public Mono<@NotNull ResponseEntity<@NotNull ProductCategoryResponse>> createOrUpdate(
+            @PathVariable @NonNull UUID uuid, @Valid @RequestBody ProductCategoryRequest request) {
         return service.createOrUpdate(uuid, request)
                       .map(ResponseEntity::ok)
                       .defaultIfEmpty(ResponseEntity.notFound().build());
@@ -89,8 +80,8 @@ public class ProductController {
      * @since 1.0.0-RC1
      */
     @GetMapping("/search")
-    public Flux<@NotNull ProductResponse> search(@RequestParam @NonNull String name,
-                                                 @RequestParam(defaultValue = "16") int limit) {
+    public Flux<@NotNull ProductCategoryResponse> search(@RequestParam @NonNull String name,
+                                                         @RequestParam(defaultValue = "16") int limit) {
         return service.search(name, limit);
     }
 
