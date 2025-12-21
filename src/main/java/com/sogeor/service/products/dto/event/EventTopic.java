@@ -13,12 +13,12 @@ public enum EventTopic {
     /**
      * @since 1.0.0-RC1
      */
-    PRODUCT_CATEGORY("products-service:product-category"),
+    CATEGORY("products-service.category"),
 
     /**
      * @since 1.0.0-RC1
      */
-    PRODUCT("products-service:product");
+    PRODUCT("products-service.product");
 
     /**
      * @since 1.0.0-RC1

@@ -13,17 +13,17 @@ public enum EventType {
     /**
      * @since 1.0.0-RC1
      */
-    PRODUCT_CATEGORY_CREATED(EventTopic.PRODUCT_CATEGORY),
+    PRODUCT_CATEGORY_CREATED(EventTopic.CATEGORY),
 
     /**
      * @since 1.0.0-RC1
      */
-    PRODUCT_CATEGORY_CREATED_OR_UPDATED(EventTopic.PRODUCT_CATEGORY),
+    PRODUCT_CATEGORY_CREATED_OR_UPDATED(EventTopic.CATEGORY),
 
     /**
      * @since 1.0.0-RC1
      */
-    PRODUCT_CATEGORY_DELETED(EventTopic.PRODUCT_CATEGORY),
+    PRODUCT_CATEGORY_DELETED(EventTopic.CATEGORY),
 
     /**
      * @since 1.0.0-RC1
