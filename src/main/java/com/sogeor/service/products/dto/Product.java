@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,12 +27,17 @@ public class Product {
      * @since 1.0.0-RC1
      */
     @Id
+    private String _id;
+
+    /**
+     * @since 1.0.0-RC1
+     */
+    @Id
     private UUID uuid;
 
     /**
      * @since 1.0.0-RC1
      */
-    @DBRef
     private UUID category;
 
     /**
