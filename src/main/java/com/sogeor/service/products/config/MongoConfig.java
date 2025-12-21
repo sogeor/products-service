@@ -35,7 +35,11 @@ public class MongoConfig {
 
         @Override
         public UUID convert(String source) {
-            return UUID.fromString(source);
+            try {
+                return UUID.fromString(source);
+            } catch (RuntimeException e) {
+                return null;
+            }
         }
 
     }
